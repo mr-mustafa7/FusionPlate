@@ -71,7 +71,9 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>🧊 + 🍽️ FusionPlate</h1>
+        <h1>
+          <span className="logo-emoji">🧊 + 🍽️</span> <span className="logo-text">FusionPlate</span>
+        </h1>
         <p className="subtitle">
           Photo of your fridge. Photo of what you're craving. One AI-invented fusion recipe.
         </p>

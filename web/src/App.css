@@ -15,6 +15,9 @@
 .app-header h1 {
   margin-bottom: 4px;
   letter-spacing: normal;
+}
+
+.app-header .logo-text {
   background: linear-gradient(90deg, #ff7a3d, var(--accent));
   -webkit-background-clip: text;
   background-clip: text;
