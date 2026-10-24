@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
+import { IconUpload, IconRefresh } from "./icons";
 
-export default function PhotoSlot({ label, hint, emoji, file, onChange }) {
+export default function PhotoSlot({ index, label, hint, file, onChange }) {
   const inputRef = useRef(null);
   const [preview, setPreview] = useState(null);
   const [dragOver, setDragOver] = useState(false);
@@ -14,40 +15,51 @@ export default function PhotoSlot({ label, hint, emoji, file, onChange }) {
   }
 
   return (
-    <div
-      className={`photo-slot ${dragOver ? "drag-over" : ""} ${file ? "filled" : ""}`}
-      onDragOver={(e) => {
-        e.preventDefault();
-        setDragOver(true);
-      }}
-      onDragLeave={() => setDragOver(false)}
-      onDrop={(e) => {
-        e.preventDefault();
-        setDragOver(false);
-        handleFile(e.dataTransfer.files?.[0]);
-      }}
-      onClick={() => inputRef.current?.click()}
-      role="button"
-      tabIndex={0}
-    >
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        hidden
-        onChange={(e) => handleFile(e.target.files?.[0])}
-      />
-      {preview ? (
-        <img src={preview} alt={label} className="photo-preview" />
-      ) : (
-        <div className="photo-placeholder">
-          <span className="photo-emoji">{emoji}</span>
-          <span className="photo-label">{label}</span>
-          <span className="photo-hint">{hint}</span>
-        </div>
-      )}
-      {preview && <div className="photo-overlay">Tap to replace</div>}
+    <div className="photo-slot-wrap">
+      <span className="slot-index">{index}</span>
+      <div
+        className={`photo-slot ${dragOver ? "drag-over" : ""} ${file ? "filled" : ""}`}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragOver(true);
+        }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragOver(false);
+          handleFile(e.dataTransfer.files?.[0]);
+        }}
+        onClick={() => inputRef.current?.click()}
+        role="button"
+        tabIndex={0}
+      >
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          hidden
+          onChange={(e) => handleFile(e.target.files?.[0])}
+        />
+        {preview ? (
+          <>
+            <img src={preview} alt={label} className="photo-preview" />
+            <span className="photo-tag">{label}</span>
+            <div className="photo-overlay">
+              <IconRefresh width={14} height={14} />
+              Replace
+            </div>
+          </>
+        ) : (
+          <div className="photo-placeholder">
+            <span className="photo-icon">
+              <IconUpload width={20} height={20} />
+            </span>
+            <span className="photo-label">{label}</span>
+            <span className="photo-hint">{hint}</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
