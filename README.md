@@ -33,11 +33,6 @@ falls back to the vision model for generation and says so in the UI — same for
 flaky connection, which drops into a demo mode with representative canned fusions (complete with a
 locally-computed flavor profile) instead of crashing mid-judging.
 
-## Why this fits the track
-
-> "Work with text and images to create an assistant that understands more of what users share.
-> Experiment with an open model while using the Gemini API to move quickly from an idea to a working
-> prototype." — Best Gemma 4 Project brief
 
 FusionPlate's entire core mechanism *is* that sentence, twice over: a cloud-hosted Gemma model reached
 through the Gemini API for the default path, and — going further than the brief asks — the actual
@@ -97,18 +92,6 @@ server/  (Node + Express)
   mockData.js                — canned fusions for offline/demo-mode reliability
 ```
 
-## Demo script (happy path)
-
-1. Upload/take a photo of a fridge or pantry.
-2. Upload/take a photo of a dish you're craving.
-3. Hit "Fuse It!" — watch the fusing animation.
-4. Read out the generated fusion recipe, point at the radar chart and affinity score to show the
-   flavor-science grounding is real and computed, not just an LLM guess.
-5. Point at the "open-weight model" badge to call out the Gemma usage explicitly for judges.
-6. For the finale: toggle "Run Gemma 4 locally" (pre-warmed in advance — see the setup note above) and
-   re-run live, showing the recipe regenerating entirely offline, in-browser, on WebGPU — no network call
-   for that step at all. Open the Network tab first if you want to visibly prove nothing's leaving the
-   machine.
 
 ## What's next (if we had more time)
 
