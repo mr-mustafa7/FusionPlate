@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import PhotoSlot from "./PhotoSlot";
 import ResultCard from "./ResultCard";
 import HistoryStrip from "./HistoryStrip";
-import { fuse, extractOnly, health } from "./api";
+import { fuse, extractOnly } from "./api";
 import { isWebGPUSupported, generateFusionRecipeLocally, LOCAL_MODEL_ID } from "./webllmClient";
 import "./App.css";
 
@@ -13,14 +13,9 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [history, setHistory] = useState([]);
-  const [liveEnabled, setLiveEnabled] = useState(null);
   const [localMode, setLocalMode] = useState(false);
   const [localProgress, setLocalProgress] = useState(null);
   const webgpuSupported = isWebGPUSupported();
-
-  useEffect(() => {
-    health().then((h) => setLiveEnabled(h.liveModelsConfigured)).catch(() => setLiveEnabled(false));
-  }, []);
 
   async function handleFuseCloud() {
     const data = await fuse(fridgeFile, cravingFile);
@@ -80,9 +75,6 @@ export default function App() {
         <p className="subtitle">
           Photo of your fridge. Photo of what you're craving. One AI-invented fusion recipe.
         </p>
-        {liveEnabled === false && (
-          <p className="demo-banner">Running in demo mode (no GEMINI_API_KEY set) — showing representative fusions.</p>
-        )}
       </header>
 
       <main className="fuse-panel">
