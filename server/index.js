@@ -31,10 +31,20 @@ app.post(
     try {
       const fridgeFile = req.files?.fridge?.[0];
       const cravingFile = req.files?.craving?.[0];
+      const fridgeText = (req.body?.fridgeText || "").trim();
+      const cravingText = (req.body?.cravingText || "").trim();
+      const spookify = req.body?.spookify === "true";
+      const servings = Number(req.body?.servings) || 2;
+      let dietary = [];
+      try {
+        dietary = JSON.parse(req.body?.dietary || "[]");
+      } catch {
+        dietary = [];
+      }
 
       if (!hasApiKey()) {
         await new Promise((r) => setTimeout(r, 900)); // feels like real "fusing" work
-        const mock = pickMockFusion();
+        const mock = pickMockFusion({ spooky: spookify });
         return res.json({
           mode: "demo",
           extraction: mock.extraction,
@@ -44,20 +54,25 @@ app.post(
         });
       }
 
-      if (!fridgeFile || !cravingFile) {
-        return res.status(400).json({ error: "Both 'fridge' and 'craving' photos are required." });
+      if ((!fridgeFile && !fridgeText) || (!cravingFile && !cravingText)) {
+        return res.status(400).json({ error: "A fridge photo/pantry and either a craving photo or description are required." });
       }
 
       const result = await runFusionPipeline({
-        fridgeImage: { mimeType: fridgeFile.mimetype, data: fridgeFile.buffer.toString("base64") },
-        cravingImage: { mimeType: cravingFile.mimetype, data: cravingFile.buffer.toString("base64") }
+        fridgeImage: fridgeFile ? { mimeType: fridgeFile.mimetype, data: fridgeFile.buffer.toString("base64") } : null,
+        fridgeText: fridgeFile ? null : fridgeText,
+        cravingImage: cravingFile ? { mimeType: cravingFile.mimetype, data: cravingFile.buffer.toString("base64") } : null,
+        cravingText: cravingFile ? null : cravingText,
+        spookify,
+        dietary,
+        servings
       });
 
       res.json(result);
     } catch (err) {
       console.error("[fusion] pipeline error:", err);
       // Never hard-fail the demo: degrade to a mock fusion instead of a 500 screen.
-      const mock = pickMockFusion();
+      const mock = pickMockFusion({ spooky: req.body?.spookify === "true" });
       res.json({
         mode: "demo-fallback",
         extraction: mock.extraction,
@@ -83,6 +98,8 @@ app.post(
     try {
       const fridgeFile = req.files?.fridge?.[0];
       const cravingFile = req.files?.craving?.[0];
+      const fridgeText = (req.body?.fridgeText || "").trim();
+      const cravingText = (req.body?.cravingText || "").trim();
 
       if (!hasApiKey()) {
         const mock = pickMockFusion();
@@ -93,13 +110,15 @@ app.post(
         });
       }
 
-      if (!fridgeFile || !cravingFile) {
-        return res.status(400).json({ error: "Both 'fridge' and 'craving' photos are required." });
+      if ((!fridgeFile && !fridgeText) || (!cravingFile && !cravingText)) {
+        return res.status(400).json({ error: "A fridge photo/pantry and either a craving photo or description are required." });
       }
 
       const result = await extractWithFlavorProfile({
-        fridgeImage: { mimeType: fridgeFile.mimetype, data: fridgeFile.buffer.toString("base64") },
-        cravingImage: { mimeType: cravingFile.mimetype, data: cravingFile.buffer.toString("base64") }
+        fridgeImage: fridgeFile ? { mimeType: fridgeFile.mimetype, data: fridgeFile.buffer.toString("base64") } : null,
+        fridgeText: fridgeFile ? null : fridgeText,
+        cravingImage: cravingFile ? { mimeType: cravingFile.mimetype, data: cravingFile.buffer.toString("base64") } : null,
+        cravingText: cravingFile ? null : cravingText
       });
 
       res.json({ mode: "live", ...result });

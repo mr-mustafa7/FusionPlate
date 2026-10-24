@@ -157,18 +157,32 @@ function addWeighted(vec, weights, scale = 1) {
   }
 }
 
+// Classifies a single ingredient against the taxonomy. Returns a RAW (unnormalized) weight
+// vector — callers that aggregate across many ingredients (vectorFromIngredients) want raw
+// mass so ingredients with more/stronger cluster hits count for more, same as before this was
+// factored out. `matched` is false when nothing in INGREDIENT_CLUSTERS matched by substring —
+// callers that need a confident signal (like substitution matching) should treat an unmatched
+// ingredient as "unknown", not "neutral".
+function classifyIngredient(raw) {
+  const name = String(raw).toLowerCase();
+  const vec = emptyVector();
+  let matched = false;
+  for (const [key, weights] of Object.entries(INGREDIENT_CLUSTERS)) {
+    if (name.includes(key)) {
+      addWeighted(vec, weights);
+      matched = true;
+    }
+  }
+  return { vector: vec, matched };
+}
+
 function vectorFromIngredients(ingredients) {
   const vec = emptyVector();
   for (const raw of ingredients) {
-    const name = String(raw).toLowerCase();
-    let matched = false;
-    for (const [key, weights] of Object.entries(INGREDIENT_CLUSTERS)) {
-      if (name.includes(key)) {
-        addWeighted(vec, weights);
-        matched = true;
-      }
-    }
-    if (!matched) {
+    const { vector, matched } = classifyIngredient(raw);
+    if (matched) {
+      addWeighted(vec, vector);
+    } else {
       // Unknown ingredient: spread a small flat weight so it doesn't vanish from the model entirely.
       addWeighted(vec, Object.fromEntries(CLUSTERS.map((c) => [c, 1])), 0.15);
     }
@@ -233,6 +247,62 @@ export function analyzeFlavorFusion(extraction) {
     fridgeUniqueClusters,
     cravingUniqueClusters
   };
+}
+
+/**
+ * For each ingredient the recipe needs that the user doesn't already have, finds the fridge
+ * item (if any) that is the closest flavor-cluster match and could stand in for it. This is
+ * the same symbolic model as analyzeFlavorFusion, just run pairwise instead of aggregated —
+ * it only suggests a swap when both ingredients actually matched the taxonomy (never guesses
+ * off two "unknown" items, which would otherwise look like a false perfect match once
+ * normalized) and the similarity clears a confidence floor.
+ */
+// How many clusters both vectors actually have nonzero weight in. Two ingredients that are
+// each dominated by a single shared axis (e.g. "ramen" and "soy sauce" both read mostly as
+// umami) can still score a deceptively high cosine similarity despite being nothing alike as
+// ingredients — requiring overlap across at least two axes filters those out, since a real
+// substitute (parmesan/cheddar: both umami AND creamy) agrees on more than one dimension.
+function sharedClusterCount(a, b) {
+  return CLUSTERS.filter((c) => a[c] > 0 && b[c] > 0).length;
+}
+
+export function suggestSubstitutions(fridgeIngredients, neededIngredients) {
+  const fridgeCandidates = (fridgeIngredients || [])
+    .map((item) => ({ item, ...classifyIngredient(item) }))
+    .filter((c) => c.matched);
+
+  const MIN_SCORE = 0.6;
+  const MIN_SHARED_CLUSTERS = 2;
+
+  return (neededIngredients || [])
+    .map((needed) => {
+      const needClass = classifyIngredient(needed);
+      if (!needClass.matched || fridgeCandidates.length === 0) {
+        return { needed, suggestion: null };
+      }
+      let best = null;
+      let bestScore = 0;
+      for (const candidate of fridgeCandidates) {
+        if (sharedClusterCount(needClass.vector, candidate.vector) < MIN_SHARED_CLUSTERS) continue;
+        const score = cosineSimilarity(needClass.vector, candidate.vector);
+        if (score > bestScore) {
+          bestScore = score;
+          best = candidate;
+        }
+      }
+      if (!best || bestScore < MIN_SCORE) return { needed, suggestion: null };
+
+      const sharedClusters = topClusters(needClass.vector, 2).filter((c) =>
+        topClusters(best.vector, 2).includes(c)
+      );
+      return {
+        needed,
+        suggestion: best.item,
+        score: Math.round(bestScore * 100),
+        sharedClusters
+      };
+    })
+    .filter((s) => s.suggestion);
 }
 
 export function flavorProfileToPromptContext(profile) {

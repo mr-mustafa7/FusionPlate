@@ -68,6 +68,7 @@ export const MOCK_FUSIONS = [
     }
   },
   {
+    tags: ["spooky"],
     extraction: {
       fridgeIngredients: ["ramen noodles", "pumpkin puree", "coconut milk", "chili flakes", "lime"],
       cravingDish: "pumpkin spice latte",
@@ -99,10 +100,171 @@ export const MOCK_FUSIONS = [
       platingTip: "Serve in a clear mug so the orange broth shows — garnish with a cinnamon-stick 'straw'.",
       funFactOrTwist: "Pumpkin, warm spice, and a creamy base are the actual flavor skeleton of a PSL — ramen just gives it a spine."
     }
+  },
+  {
+    extraction: {
+      fridgeIngredients: ["leftover roast chicken", "tortillas", "lime", "cilantro", "fresh ginger"],
+      cravingDish: "pho",
+      cravingCuisine: "Vietnamese",
+      cravingFlavorNotes: ["fragrant broth", "fresh herbs", "warm spice", "bright"]
+    },
+    recipe: {
+      title: "Pho-ded Chicken Tacos",
+      tagline: "A bowl of pho that got folded in half and handed to you.",
+      fusedCuisines: ["Vietnamese", "Mexican"],
+      fusionScore: { fridgePercent: 55, cravingPercent: 45 },
+      ingredients: [
+        { item: "leftover roast chicken", have: true },
+        { item: "tortillas", have: true },
+        { item: "lime", have: true },
+        { item: "cilantro", have: true },
+        { item: "fresh ginger", have: true },
+        { item: "star anise", have: false },
+        { item: "fish sauce", have: false }
+      ],
+      steps: [
+        "Simmer shredded chicken in water with ginger and star anise until the kitchen smells like a pho stall.",
+        "Reduce until it's less a broth, more a glaze — season with fish sauce and lime.",
+        "Warm tortillas, pile the glazed chicken down the center.",
+        "Top with torn cilantro and a squeeze of lime, fold like a taco.",
+        "Serve with extra lime wedges and a tiny cup of the reduced broth for dipping."
+      ],
+      platingTip: "Line the tacos up taco-truck style with the dipping broth in a shot glass on the side.",
+      funFactOrTwist: "Pho's whole soul is an aromatic broth — this just reduces that broth until it's a glaze instead of a soup."
+    }
+  },
+  {
+    extraction: {
+      fridgeIngredients: ["potatoes", "cheddar cheese", "bacon bits", "sour cream", "butter"],
+      cravingDish: "korean fried chicken",
+      cravingCuisine: "Korean",
+      cravingFlavorNotes: ["sticky-sweet", "spicy", "crispy", "glazed"]
+    },
+    recipe: {
+      title: "Gochujang Loaded Potato Bites",
+      tagline: "Your loaded baked potato just got a Seoul.",
+      fusedCuisines: ["Korean", "American"],
+      fusionScore: { fridgePercent: 68, cravingPercent: 32 },
+      ingredients: [
+        { item: "potatoes", have: true },
+        { item: "cheddar cheese", have: true },
+        { item: "bacon bits", have: true },
+        { item: "sour cream", have: true },
+        { item: "butter", have: true },
+        { item: "gochujang", have: false },
+        { item: "honey", have: false }
+      ],
+      steps: [
+        "Roast potato halves until crisp-skinned and fluffy inside.",
+        "Whisk gochujang, honey, and melted butter into a sticky glaze.",
+        "Brush the glaze thick over the hot potatoes.",
+        "Scatter cheddar and bacon bits on top, broil until the cheese bubbles.",
+        "Finish with a drizzle of sour cream and a pinch more gochujang for the brave."
+      ],
+      platingTip: "Serve on a dark slate board, glaze drizzled in a zigzag like a diner special.",
+      funFactOrTwist: "Korean fried chicken's genius is the sticky-sweet-spicy glaze — turns out that glaze works on absolutely anything fried or roasted."
+    }
+  },
+  {
+    extraction: {
+      fridgeIngredients: ["canned tuna", "mayonnaise", "sweet corn", "nori sheets", "rice"],
+      cravingDish: "margherita pizza",
+      cravingCuisine: "Italian",
+      cravingFlavorNotes: ["melty cheese", "tomato", "basil", "comforting"]
+    },
+    recipe: {
+      title: "Onigiri Margherita Bites",
+      tagline: "A rice ball and a pizza slice had an argument and this is the truce.",
+      fusedCuisines: ["Japanese", "Italian"],
+      fusionScore: { fridgePercent: 62, cravingPercent: 38 },
+      ingredients: [
+        { item: "rice", have: true },
+        { item: "nori sheets", have: true },
+        { item: "canned tuna", have: true },
+        { item: "sweet corn", have: true },
+        { item: "mayonnaise", have: true },
+        { item: "mozzarella", have: false },
+        { item: "cherry tomatoes", have: false }
+      ],
+      steps: [
+        "Pack warm rice into flat discs, like mini pizza bases.",
+        "Mix tuna, corn, and mayo into a quick topping.",
+        "Pile the tuna-corn mix onto each rice disc, top with halved cherry tomatoes and torn mozzarella.",
+        "Broil just until the cheese melts and the rice edges crisp.",
+        "Wrap a nori strip around the base of each like a pizza-slice belt."
+      ],
+      platingTip: "Arrange in a circle like a sliced pizza, nori strips facing outward for the full illusion.",
+      funFactOrTwist: "A rice disc browned in a hot pan behaves a lot like a thick pizza base — the nori just admits which cuisine lent the crust."
+    }
+  },
+  {
+    extraction: {
+      fridgeIngredients: ["red lentils", "canned tomatoes", "cumin", "garlic", "spinach"],
+      cravingDish: "cheeseburger",
+      cravingCuisine: "American",
+      cravingFlavorNotes: ["juicy", "charred", "savory", "hearty"]
+    },
+    recipe: {
+      title: "Dal Smash Burger",
+      tagline: "The humble lentil, living its best patty life.",
+      fusedCuisines: ["Indian", "American"],
+      fusionScore: { fridgePercent: 72, cravingPercent: 28 },
+      ingredients: [
+        { item: "red lentils", have: true },
+        { item: "canned tomatoes", have: true },
+        { item: "cumin", have: true },
+        { item: "garlic", have: true },
+        { item: "spinach", have: true },
+        { item: "burger buns", have: false },
+        { item: "cheddar cheese", have: false }
+      ],
+      steps: [
+        "Simmer lentils with tomatoes, cumin, and garlic until thick enough to hold a shape.",
+        "Fold in chopped spinach, cool, then form into patties.",
+        "Sear hard in a very hot pan until a deep crust forms on both sides.",
+        "Melt cheddar over each patty in the last minute of cooking.",
+        "Stack in a toasted bun with your usual burger fixings."
+      ],
+      platingTip: "Stack tall and skewer with a toothpick, fries fanned out alongside like a diner plate.",
+      funFactOrTwist: "Dal already has the dense, savory thing a good burger patty needs — this just gives it a bun and a sear."
+    }
+  },
+  {
+    extraction: {
+      fridgeIngredients: ["puff pastry", "chocolate hazelnut spread", "bananas", "cinnamon"],
+      cravingDish: "churros",
+      cravingCuisine: "Mexican",
+      cravingFlavorNotes: ["cinnamon sugar", "crisp", "sweet", "warm"]
+    },
+    recipe: {
+      title: "Churro Banana Pastry Twists",
+      tagline: "Croissant dough that moved to Mexico and never looked back.",
+      fusedCuisines: ["French", "Mexican"],
+      fusionScore: { fridgePercent: 66, cravingPercent: 34 },
+      ingredients: [
+        { item: "puff pastry", have: true },
+        { item: "chocolate hazelnut spread", have: true },
+        { item: "bananas", have: true },
+        { item: "cinnamon", have: true },
+        { item: "sugar", have: false },
+        { item: "butter (for brushing)", have: false }
+      ],
+      steps: [
+        "Roll out puff pastry, spread a thin layer of chocolate hazelnut spread across it.",
+        "Lay thin banana slices down one side, fold and twist into a rope.",
+        "Brush with melted butter and roll in cinnamon sugar.",
+        "Bake until deep golden and crisp at the edges.",
+        "Serve warm while the chocolate is still molten inside."
+      ],
+      platingTip: "Stand the twists upright in a glass like churros at a street cart, extra cinnamon sugar dusted over the top.",
+      funFactOrTwist: "Churros are really just fried dough and cinnamon sugar — puff pastry gets there in the oven instead of the fryer."
+    }
   }
 ];
 
-export function pickMockFusion() {
-  const pick = MOCK_FUSIONS[Math.floor(Math.random() * MOCK_FUSIONS.length)];
+export function pickMockFusion({ spooky } = {}) {
+  const pool = spooky ? MOCK_FUSIONS.filter((f) => f.tags?.includes("spooky")) : MOCK_FUSIONS;
+  const source = pool.length > 0 ? pool : MOCK_FUSIONS;
+  const pick = source[Math.floor(Math.random() * source.length)];
   return structuredClone(pick);
 }

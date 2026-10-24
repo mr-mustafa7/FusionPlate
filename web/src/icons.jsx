@@ -73,6 +73,33 @@ export function IconMark(props) {
   );
 }
 
+export function IconBookmark(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M6.5 4.5a1.5 1.5 0 0 1 1.5-1.5h8a1.5 1.5 0 0 1 1.5 1.5v16l-5.5-3.5-5.5 3.5Z" />
+    </svg>
+  );
+}
+
+export function IconMic(props) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M5.5 11a6.5 6.5 0 0 0 13 0" />
+      <path d="M12 17.5v3.5M9 21h6" />
+    </svg>
+  );
+}
+
+export function IconGhost(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M5.5 19V11a6.5 6.5 0 0 1 13 0v8l-2.2-1.6L14 19l-2-1.6L10 19l-2.3-1.6L5.5 19Z" />
+      <path d="M9.5 11h.01M14.5 11h.01" strokeWidth={2.2} />
+    </svg>
+  );
+}
+
 export function IconRefresh(props) {
   return (
     <svg {...base} {...props}>

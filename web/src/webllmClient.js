@@ -51,7 +51,27 @@ export function loadLocalEngine(onProgress) {
   return enginePromise;
 }
 
-export async function generateFusionRecipeLocally({ extraction, flavorProfile, onProgress }) {
+const SPOOKY_INSTRUCTION = `Spookify mode is ON: lean into a Halloween theme. Give the dish an eerie/punny
+name, write the tagline and funFactOrTwist with a spooky-playful tone (think haunted kitchen, not horror movie),
+and if it fits naturally, nudge the plating toward something Halloween-appropriate — but never sacrifice the
+dish actually sounding edible and good.`;
+
+function dietaryInstruction({ dietary, servings }) {
+  const lines = [];
+  if (dietary?.length) {
+    lines.push(
+      `Dietary constraints (hard requirements, not suggestions): ${dietary.join(
+        ", "
+      )}. Swap or drop any ingredient that violates one of these — never include it and leave it unaddressed.`
+    );
+  }
+  if (servings && servings !== 2) {
+    lines.push(`Scale the recipe for ${servings} servings — adjust quantities mentioned in the steps accordingly.`);
+  }
+  return lines.length ? `\n${lines.join("\n")}\n` : "";
+}
+
+export async function generateFusionRecipeLocally({ extraction, flavorProfile, spookify, dietary, servings, onProgress }) {
   const engine = await loadLocalEngine(onProgress);
 
   const prompt = `You are a playful, slightly chaotic fusion chef. Using ONLY the structured data below, invent one
@@ -61,7 +81,7 @@ Keep steps short and punchy (4-7 steps). The tone should be fun and a little wit
 Respond with ONLY a JSON object matching the required schema, no extra text.
 
 ${flavorProfileToPromptContext(flavorProfile)}
-
+${spookify ? `\n${SPOOKY_INSTRUCTION}\n` : ""}${dietaryInstruction({ dietary, servings })}
 Structured input:
 ${JSON.stringify(extraction, null, 2)}`;
 

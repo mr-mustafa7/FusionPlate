@@ -1,5 +1,8 @@
+import { useEffect, useState } from "react";
 import FlavorRadar from "./FlavorRadar";
-import { IconCheck, IconPlus, IconDot } from "./icons";
+import { suggestSubstitutions } from "./substitutions";
+import { addToShoppingList, isRecipeSaved, saveRecipe, removeSavedRecipe } from "./storage";
+import { IconCheck, IconPlus, IconDot, IconBookmark } from "./icons";
 
 const MODE_LABEL = {
   live: "Live — Gemini + Gemma",
@@ -16,17 +19,52 @@ const MODE_TONE = {
 };
 
 export default function ResultCard({ result }) {
+  const [added, setAdded] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    setAdded(false);
+    setSaved(result?.recipe?.title ? isRecipeSaved(result.recipe.title) : false);
+  }, [result]);
+
   if (!result) return null;
   const { extraction, recipe, meta, mode, warning, flavorProfile } = result;
+  const neededItems = recipe.ingredients.filter((ing) => !ing.have).map((ing) => ing.item);
+  const substitutions = suggestSubstitutions(extraction.fridgeIngredients, neededItems);
+
+  function handleAddToShoppingList() {
+    addToShoppingList(neededItems);
+    setAdded(true);
+  }
+
+  function handleToggleSave() {
+    if (saved) {
+      removeSavedRecipe(recipe.title);
+      setSaved(false);
+    } else {
+      saveRecipe(result);
+      setSaved(true);
+    }
+  }
 
   return (
     <article className="result-card">
-      <div className="result-badges">
-        <span className={`badge badge-${MODE_TONE[mode] || "neutral"}`}>
-          <IconDot />
-          {MODE_LABEL[mode] || mode}
-        </span>
-        {meta?.usedOpenModel && <span className="badge badge-outline">open-weight · {meta.generationModel}</span>}
+      <div className="result-header-row">
+        <div className="result-badges">
+          <span className={`badge badge-${MODE_TONE[mode] || "neutral"}`}>
+            <IconDot />
+            {MODE_LABEL[mode] || mode}
+          </span>
+          {meta?.usedOpenModel && <span className="badge badge-outline">open-weight · {meta.generationModel}</span>}
+        </div>
+        <button
+          type="button"
+          className={`save-button ${saved ? "saved" : ""}`}
+          onClick={handleToggleSave}
+          title={saved ? "Remove from saved" : "Save this recipe"}
+        >
+          <IconBookmark width={16} height={16} fill={saved ? "currentColor" : "none"} />
+        </button>
       </div>
       {warning && <p className="result-warning">{warning}</p>}
 
@@ -67,14 +105,27 @@ export default function ResultCard({ result }) {
       <div className="section-card">
         <div className="result-grid">
           <div>
-            <h3>Ingredients</h3>
+            <div className="ingredients-heading-row">
+              <h3>Ingredients</h3>
+              {neededItems.length > 0 && (
+                <button type="button" className="add-to-list-button" onClick={handleAddToShoppingList}>
+                  {added ? "Added ✓" : "+ Shopping list"}
+                </button>
+              )}
+            </div>
             <ul className="ingredient-list">
-              {recipe.ingredients.map((ing, i) => (
-                <li key={i} className={ing.have ? "have" : "need"}>
-                  <span className="ingredient-icon">{ing.have ? <IconCheck width={13} height={13} /> : <IconPlus width={12} height={12} />}</span>
-                  {ing.item}
-                </li>
-              ))}
+              {recipe.ingredients.map((ing, i) => {
+                const sub = !ing.have && substitutions[ing.item];
+                return (
+                  <li key={i} className={ing.have ? "have" : "need"}>
+                    <span className="ingredient-icon">{ing.have ? <IconCheck width={13} height={13} /> : <IconPlus width={12} height={12} />}</span>
+                    <span>
+                      {ing.item}
+                      {sub && <span className="sub-hint"> — try {sub.item}, you have it</span>}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
           </div>
           <div>
