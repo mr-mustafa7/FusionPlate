@@ -11,14 +11,19 @@ and fused the two into a dish that only makes sense because of those two specifi
 
 ## What it does
 
-Upload two photos — your fridge/pantry, and a dish or cuisine you're craving (a plated meal, a menu, a
-takeout screenshot, anything). FusionPlate reads both photos, figures out what's really there and what
-cuisine/flavor profile the craving represents, computes a real numeric flavor-compatibility score between
-them, then invents an original fusion recipe grounded in that score: a title, a radar chart of the shared
-flavor DNA, a full ingredient list (marking what you already have vs. what to buy), step-by-step
+Show FusionPlate your fridge/pantry — a photo, or a saved Pantry list — and what you're craving, as a
+photo or a typed/spoken description. It reads both, figures out what's really available and what
+cuisine/flavor profile the craving represents, computes a real numeric flavor-compatibility score, then
+invents an original fusion recipe grounded in that score: a title, a radar chart of the shared flavor DNA,
+an ingredient list (with flavor-matched substitution suggestions for anything missing), step-by-step
 instructions, a plating tip, and — when live models are enabled — a generated photo of the finished dish.
-A toggle lets you regenerate the recipe step entirely offline, running the real Gemma 4 model in your own
-browser via WebGPU.
+
+Beyond the single generation: a **Pantry** tab so you don't re-photograph your fridge every time, a
+**Shopping List** auto-populated from missing ingredients, a **Preferences** tab (dietary restrictions +
+household size) that actually constrains every generation, a persistent **Saved** cookbook, a **Spookify**
+toggle that genuinely biases the recipe/image toward Halloween, and a **Share** button using the native
+share sheet. A separate toggle lets you regenerate the recipe step entirely offline, running the real
+Gemma 4 model in your own browser via WebGPU.
 
 ## How we built it
 
@@ -68,8 +73,8 @@ chatbot wrapper.
 
 ## What's next
 
-- Let users save a fusion as a shareable image card.
-- A "spookify this fusion" button for a free Halloween-side-challenge angle.
+- Real accounts and a lightweight social layer beyond the native-share-sheet Share button.
+- Split the "spice" flavor cluster into heat vs. warm-spice for even sharper substitution matches.
 - Stream tokens from the local WebGPU model for a livelier "thinking" demo moment.
 
 ## Tech stack

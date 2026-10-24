@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import FlavorRadar from "./FlavorRadar";
 import { suggestSubstitutions } from "./substitutions";
 import { addToShoppingList, isRecipeSaved, saveRecipe, removeSavedRecipe } from "./storage";
-import { IconCheck, IconPlus, IconDot, IconBookmark } from "./icons";
+import { IconCheck, IconPlus, IconDot, IconBookmark, IconShare } from "./icons";
 
 const MODE_LABEL = {
   live: "Live — Gemini + Gemma",
@@ -18,12 +18,21 @@ const MODE_TONE = {
   "demo-fallback": "warn"
 };
 
+function buildShareText(result) {
+  const { recipe } = result;
+  const ingredients = recipe.ingredients.map((i) => `- ${i.item}`).join("\n");
+  const steps = recipe.steps.map((s, i) => `${i + 1}. ${s}`).join("\n");
+  return `${recipe.title}\n${recipe.tagline}\n\nIngredients:\n${ingredients}\n\nSteps:\n${steps}\n\nMade with FusionPlate.`;
+}
+
 export default function ResultCard({ result }) {
   const [added, setAdded] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [shareState, setShareState] = useState("idle");
 
   useEffect(() => {
     setAdded(false);
+    setShareState("idle");
     setSaved(result?.recipe?.title ? isRecipeSaved(result.recipe.title) : false);
   }, [result]);
 
@@ -47,6 +56,28 @@ export default function ResultCard({ result }) {
     }
   }
 
+  async function handleShare() {
+    const text = buildShareText(result);
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: recipe.title, text });
+      } catch {
+        // user cancelled the share sheet — not an error
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      setShareState("copied");
+      setTimeout(() => setShareState("idle"), 2000);
+    } catch {
+      // Clipboard permission denied or unavailable — fall back to a selectable prompt
+      // rather than failing silently with no feedback at all.
+      window.prompt("Copy this to share:", text);
+      setShareState("idle");
+    }
+  }
+
   return (
     <article className="result-card">
       <div className="result-header-row">
@@ -57,14 +88,19 @@ export default function ResultCard({ result }) {
           </span>
           {meta?.usedOpenModel && <span className="badge badge-outline">open-weight · {meta.generationModel}</span>}
         </div>
-        <button
-          type="button"
-          className={`save-button ${saved ? "saved" : ""}`}
-          onClick={handleToggleSave}
-          title={saved ? "Remove from saved" : "Save this recipe"}
-        >
-          <IconBookmark width={16} height={16} fill={saved ? "currentColor" : "none"} />
-        </button>
+        <div className="result-actions">
+          <button type="button" className="save-button" onClick={handleShare} title="Share with a friend">
+            {shareState === "copied" ? "Copied" : <IconShare width={16} height={16} />}
+          </button>
+          <button
+            type="button"
+            className={`save-button ${saved ? "saved" : ""}`}
+            onClick={handleToggleSave}
+            title={saved ? "Remove from saved" : "Save this recipe"}
+          >
+            <IconBookmark width={16} height={16} fill={saved ? "currentColor" : "none"} />
+          </button>
+        </div>
       </div>
       {warning && <p className="result-warning">{warning}</p>}
 
